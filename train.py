@@ -58,17 +58,21 @@ def train():
         train_set = torch.utils.data.ConcatDataset(train_sets)
         test_set = torch.utils.data.ConcatDataset(test_sets)
     else:
-        train_set, test_set = datasets.__dict__[args.datasetName](args.datasetPath)
-    train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size = args.batch_size,
-        sampler=balancedsampler.RandomBalancedSampler(train_set, int(len(train_set) / args.batch_size )),
-        num_workers= args.workers, pin_memory=True if args.use_cuda else False)
+        # train_set, test_set = datasets.__dict__[args.datasetName](args.datasetPath)
+        from datasets.atd12k import get_loader
+        train_loader = get_loader('train', args.datasetPath, args.batch_size, shuffle=True)
+        val_loader = get_loader('test', args.datasetPath, args.batch_size, shuffle=False)
 
-    val_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size,
-                                             num_workers=args.workers, pin_memory=True if args.use_cuda else False)
-    print('{} samples found, {} train samples and {} test samples '.format(len(test_set)+len(train_set),
-                                                                           len(train_set),
-                                                                           len(test_set)))
+    # train_loader = torch.utils.data.DataLoader(
+    #     train_set, batch_size = args.batch_size,
+    #     sampler=balancedsampler.RandomBalancedSampler(train_set, int(len(train_set) / args.batch_size )),
+    #     num_workers= args.workers, pin_memory=True if args.use_cuda else False)
+
+    # val_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size,
+    #                                          num_workers=args.workers, pin_memory=True if args.use_cuda else False)
+    # print('{} samples found, {} train samples and {} test samples '.format(len(test_set)+len(train_set),
+    #                                                                        len(train_set),
+    #                                                                        len(test_set)))
 
 
     # if not args.lr == 0:
